@@ -1,0 +1,133 @@
+#include <iostream>
+#include<cstdio>
+using namespace std;
+struct Node
+{
+  int data;
+  struct Node *left;
+  struct Node *right;
+}*root=NULL,*cur=NULL,*parent=NULL;
+
+Node* FindMin(Node* temp)
+{
+  while(temp->right) 
+  	temp = temp->right;
+  return temp;
+}
+
+Node* Delete(Node* temp,int data)
+{
+  if(temp == NULL) 
+  	return temp;
+  else if(temp->data > data)  
+  	temp->left = Delete(temp->left,data);
+  else if(temp->data < data)  
+  	temp->right = Delete(temp->right, data);
+  else
+   {
+		// Case 1: No Child
+		if(temp->left == NULL && temp->right == NULL)
+		{
+		  delete temp;
+		  temp = NULL;   
+		// Case 2: One Chile (On left)
+		}
+		else if(temp->left == NULL)		
+		{
+		  Node *sep = temp;
+		  delete sep;
+		} 
+		// Case 3: One Chile (On left)
+		else if(temp->right == NULL)	
+		{
+		  Node *sep = temp;
+		  delete sep;
+		}
+		// Case 4: Two children
+		else			
+		{
+	      Node *sep = FindMin(temp->right);
+	      temp->data = sep->data;
+	      temp->right= Delete(temp->right, sep->data);
+	    }
+	}
+  return temp;
+}
+void display(Node *temp, int level)
+{
+    if (temp)
+    {
+        display(temp->right, level+1);
+        cout<<endl;
+        if (temp == root)
+            cout<<"Root->:  ";
+        else
+            for (int i=0;i<level;i++)
+                cout<<"       ";
+                
+        cout<<temp->data;
+        display(temp->left, level+1);
+    }
+}
+void Insert(int dig)
+{
+	Node *temp=new Node;
+	temp->data=dig;
+	temp->left=NULL;
+	temp->right=NULL;
+	if(root==NULL)
+	{
+		root=temp;
+		cur=temp;
+	}
+	else
+	{
+		cur=root;
+		while(cur)
+		{
+			parent=cur;
+			if(temp->data>cur->data)
+				cur=cur->right;
+			else
+				cur=cur->left;
+		}
+		if(temp->data>parent->data)
+			parent->right=temp;
+		else if(temp->data<parent->data)
+			parent->left=temp;
+		else if(temp->data==parent->data)
+				cout<<temp->data<<" Already Exist!"<<endl;	
+			
+	}
+}
+void inorder(Node *temp)
+{
+	if(temp==NULL)
+		return ;
+	inorder(temp->left);
+	cout<<"  "<<temp->data;
+	inorder(temp->right);	
+}
+int main ()
+{
+	Node* result;
+  Insert(5);
+  Insert(10);
+  Insert(3);
+  Insert(4);
+  Insert(1);
+  Insert(11);
+  cout<<"Displaying Before Delete: "<<endl;
+  display(root,1); 
+  cout<<endl;
+  result = Delete(root,11);
+  result = Delete(root,3);
+  cout<<"Displaying After Delete: "<<endl;
+  display(result,1);
+  cout<<endl;
+  cout<<"________________________"<<endl;
+  cout<<"Inorder: "<<endl;
+  inorder(root);
+  cout<<"\n";
+  return 1;
+}
